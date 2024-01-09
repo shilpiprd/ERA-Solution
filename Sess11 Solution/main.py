@@ -107,7 +107,7 @@ def train(epoch):
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
-
+    return train_loss
 
 def test(epoch):
     global best_acc
@@ -141,7 +141,7 @@ def test(epoch):
 
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                          % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
-    return misclassified_images
+    return test_loss, misclassified_images
 
     # # Save checkpoint.
     # acc = 100.*correct/total

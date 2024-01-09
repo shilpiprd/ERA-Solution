@@ -157,3 +157,15 @@ def visualize_misclassified_images(misclassified_images):
         plt.title(f"Predicted: {classes[pred]}, Actual: {classes[actual]}")
         plt.axis('off')
     plt.show()
+
+def visualize_loss_accuracy(train_loss, test_loss): 
+    t = [train_items.item() for train_items in train_loss]
+    fig, axs = plt.subplots(1, 1,figsize=(15,10))
+    axs[0, 0].plot(t)
+    axs[0, 0].set_title("Training Loss")
+    # axs[1, 0].plot(train_acc)
+    # axs[1, 0].set_title("Training Accuracy")
+    axs[0, 1].plot(test_loss)
+    axs[0, 1].set_title("Test Loss")
+    # axs[1, 1].plot(test_acc)
+    # axs[1, 1].set_title("Test Accuracy")
