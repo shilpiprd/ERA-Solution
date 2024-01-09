@@ -67,9 +67,9 @@ class ResNet(nn.Module):
         out = self.layer2(out)
         out = self.layer3(out)
         out = self.layer4(out)
-        print('shape of image after layer4, ', out.shape)
+        # print('shape of image after layer4, ', out.shape) #torch.Size([2, 512, 4, 4])
         out = F.avg_pool2d(out, 4)
-        print('shape of iamge after pooling layer: ', out.shape)
+        # print('shape of iamge after pooling layer: ', out.shape) #torch.Size([2, 512, 1, 1])
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
