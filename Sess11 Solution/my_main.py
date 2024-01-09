@@ -3,10 +3,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from transforms import albu_transform, test_transforms
+# from transforms import albu_transform, test_transforms
 
 from models.resnet import ResNet18, ResNet34
-import tqdm 
+from tqdm import tqdm 
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -141,6 +141,6 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
     return test_acc, test_loss, misclassified_images
 
 
-print('printing loss curve and accuracy')
-visualize_loss_accuracy(train_loss=train_losses, train_acc = train_acc, test_loss= test_losses, test_acc = test_acc)
+# print('printing loss curve and accuracy')
+# visualize_loss_accuracy(train_loss=train_losses, train_acc = train_acc, test_loss= test_losses, test_acc = test_acc)
 #providing default values

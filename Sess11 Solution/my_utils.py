@@ -44,7 +44,7 @@ def visualize_misclassified_images(misclassified_images):
 
 def visualize_loss_accuracy(train_loss, train_acc, test_loss, test_acc): 
     t = [train_items.item() for train_items in train_loss]
-    fig, axs = plt.subplots(1, 1,figsize=(15,10))
+    fig, axs = plt.subplots(2,2,figsize=(15,10))
     axs[0, 0].plot(t)
     axs[0, 0].set_title("Training Loss")
     axs[1, 0].plot(train_acc)
