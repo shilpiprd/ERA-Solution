@@ -13,7 +13,7 @@ from albumentations.pytorch import ToTensorV2
 import numpy as np
 from torchvision import datasets, transforms
 import cv2 
-from utils import get_lr, visualize_misclassified_images, visualize_loss_accuracy
+from my_utils import get_lr, visualize_misclassified_images, visualize_loss_accuracy
 
 
 cuda = torch.cuda.is_available()
