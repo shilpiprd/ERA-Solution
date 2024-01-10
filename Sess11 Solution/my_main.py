@@ -119,18 +119,24 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
             # pred = output.argmax(dim=1, keepdim = True)  # Remove keepdim=True; now shape: [batch_size]
             pred = output.argmax(dim=1)
             correct += pred.eq(target.view_as(pred)).sum().item()        #modified this line
-
             # Find misclassified indices
-            # misclassified_idxs = (pred != target).nonzero(as_tuple=False).squeeze()
-            # for idx in misclassified_idxs:
-            #     if len(misclassified_images) < 20:  # Collect only 20 images
-            #         img = data[idx].cpu()
-            #         actual_label = target[idx].item()
-            #         predicted_label = pred[idx].item()
-            #         misclassified_images.append((img, predicted_label, actual_label))
-            #     else:
-            #         break
+            # Identify misclassified indices
+            misclassified_idxs = (pred != target).nonzero(as_tuple=False).squeeze()
 
+            # Handle the case of single/multiple misclassifications
+            if misclassified_idxs.ndim == 0:
+                misclassified_idxs = [misclassified_idxs.item()]
+            else:
+                misclassified_idxs = misclassified_idxs.tolist()
+
+            # Collect misclassified images
+            for idx in misclassified_idxs:
+                if len(misclassified_images) < 20:  # Limit the number of images
+                    img = data[idx].cpu()
+                    actual_label = target[idx].item()
+                    predicted_label = pred[idx].item()
+                    misclassified_images.append((img, predicted_label, actual_label))
+                      
     test_loss /= len(test_loader.dataset)
     test_losses.append(test_loss)
     Accuracy = 100. * correct / len(test_loader.dataset)
