@@ -107,6 +107,7 @@ def train(model, device= device, train_loader= train_loader, optimizer= optimize
     return train_acc, train_losses
 
 def test(model= net, device= device, test_loader= test_loader, criterion= criterion):            #added criterion here
+    model = model.to(device) 
     model.eval()
     test_loss = 0
     correct = 0
@@ -145,7 +146,7 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
         100. * correct / len(test_loader.dataset)))
 
     test_acc.append(100. * correct / len(test_loader.dataset))
-    return test_acc, test_loss, misclassified_images
+    return test_acc, test_losses, misclassified_images
 
 
 # print('printing loss curve and accuracy')
