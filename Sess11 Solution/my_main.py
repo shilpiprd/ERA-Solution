@@ -160,11 +160,11 @@ def visualize_train_data():
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
 
-    dataiter = iter(train_loader)
-    images, labels = next(dataiter)
-    classes = ('plane', 'car', 'bird', 'cat',
-            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    # show images
-    imshow(torchvision.utils.make_grid(images[:4]))
-    # print labels
-    print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+dataiter = iter(train_loader)
+images, labels = next(dataiter)
+classes = ('plane', 'car', 'bird', 'cat',
+        'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+# show images
+imshow(torchvision.utils.make_grid(images[:4]))
+# print labels
+print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
