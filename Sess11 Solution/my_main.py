@@ -12,9 +12,10 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import numpy as np
 from torchvision import datasets, transforms
-import cv2 
+import cv2
 from my_utils import get_lr, visualize_misclassified_images, visualize_loss_accuracy
-
+import torchvision
+import matplotlib.pyplot as plt
 
 cuda = torch.cuda.is_available()
 dataloader_args = dict(shuffle=True, batch_size=512, num_workers=4, pin_memory=True) if cuda else dict(shuffle=True, batch_size=64)
@@ -136,7 +137,7 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
                     img = data[idx].cpu()
                     actual_label = target[idx].item()
                     predicted_label = pred[idx].item()
-                    misclassified_images.append((img, predicted_label, actual_label))
+                    misclassified_images.append((img, actual_label, predicted_label))
                       
     test_loss /= len(test_loader.dataset)
     test_losses.append(test_loss)
@@ -152,3 +153,18 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
 # print('printing loss curve and accuracy')
 # visualize_loss_accuracy(train_loss=train_losses, train_acc = train_acc, test_loss= test_losses, test_acc = test_acc)
 #providing default values
+def visualize_train_data(): 
+   def imshow(img):
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
+
+    dataiter = iter(train_loader)
+    images, labels = next(dataiter)
+    classes = ('plane', 'car', 'bird', 'cat',
+            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    # show images
+    imshow(torchvision.utils.make_grid(images[:4]))
+    # print labels
+    print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))

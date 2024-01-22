@@ -20,6 +20,7 @@ from torchvision import datasets, transforms
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import cv2
+# from my_main import train_loader
 
 def get_lr(optimizer):
   for param_group in optimizer.param_groups:
@@ -28,7 +29,7 @@ def get_lr(optimizer):
 def visualize_misclassified_images(misclassified_images):
     classes = ['airplanes', 'cars', 'birds', 'cats', 'deer', 'dogs', 'frogs', 'horses', 'ships', 'trucks']
     plt.figure(figsize=(10, 10)) #original images were 32x32
-    for i, (image, pred, actual) in enumerate(misclassified_images[:10]):
+    for i, (image, actual, pred) in enumerate(misclassified_images[:10]):
         image = image.numpy().transpose(1, 2, 0)  # Convert to (height, width, channel)
         mean = [0.4914, 0.4822, 0.4465] #3 values for 2 channels, RGB
         std = [0.247, 0.243, 0.261]
@@ -53,3 +54,19 @@ def visualize_loss_accuracy(train_loss, train_acc, test_loss, test_acc):
     axs[0, 1].set_title("Test Loss")
     axs[1, 1].plot(test_acc)
     axs[1, 1].set_title("Test Accuracy")
+
+# def visualize_train_data(): 
+#    def imshow(img):
+#     img = img / 2 + 0.5     # unnormalize
+#     npimg = img.numpy()
+#     plt.imshow(np.transpose(npimg, (1, 2, 0)))
+#     plt.show()
+
+#     dataiter = iter(train_loader)
+#     images, labels = next(dataiter)
+#     classes = ('plane', 'car', 'bird', 'cat',
+#             'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+#     # show images
+#     imshow(torchvision.utils.make_grid(images[:4]))
+#     # print labels
+#     print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
