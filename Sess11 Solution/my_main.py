@@ -130,7 +130,13 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
                 misclassified_idxs = [misclassified_idxs.item()]
             else:
                 misclassified_idxs = misclassified_idxs.tolist()
-
+            
+            #<------------------------------->
+            # for idx_pair in misclassified_idxs:
+            #     if len(misclassified_images) < 20:  # Limit the number of images
+            #         idx = idx_pair[0] if isinstance(idx_pair, list) else idx_pair
+            #<----------------use the above for loop if u get error---------->
+            
             # Collect misclassified images
             for idx in misclassified_idxs:
                 if len(misclassified_images) < 20:  # Limit the number of images
@@ -154,17 +160,17 @@ def test(model= net, device= device, test_loader= test_loader, criterion= criter
 # visualize_loss_accuracy(train_loss=train_losses, train_acc = train_acc, test_loss= test_losses, test_acc = test_acc)
 #providing default values
 def visualize_train_data(): 
-   def imshow(img):
-    img = img / 2 + 0.5     # unnormalize
-    npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
+    def imshow(img):
+        img = img / 2 + 0.5     # unnormalize
+        npimg = img.numpy()
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+        plt.show()
 
-dataiter = iter(train_loader)
-images, labels = next(dataiter)
-classes = ('plane', 'car', 'bird', 'cat',
-        'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-# show images
-imshow(torchvision.utils.make_grid(images[:4]))
-# print labels
-print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+    dataiter = iter(train_loader)
+    images, labels = next(dataiter)
+    classes = ('plane', 'car', 'bird', 'cat',
+            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    # show images
+    imshow(torchvision.utils.make_grid(images[:4]))
+    # print labels
+    print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
