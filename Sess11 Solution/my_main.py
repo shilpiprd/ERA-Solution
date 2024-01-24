@@ -73,38 +73,38 @@ lrs = []
 
 
 def train(model, device= device, train_loader= train_loader, optimizer= optimizer, scheduler= scheduler, criterion= criterion): #adding scheduler and criterion
-  model.train()
-  pbar = tqdm(train_loader)
-  correct = 0
-  processed = 0
-  for batch_idx, (data, target) in enumerate(pbar):
-    # get samples
-    data, target = data.to(device), target.to(device)
+    model.train()
+    pbar = tqdm(train_loader)
+    correct = 0
+    processed = 0
+    for batch_idx, (data, target) in enumerate(pbar):
+        # get samples
+        data, target = data.to(device), target.to(device)
 
-    # Init
-    optimizer.zero_grad()
-    # Predict
-    y_pred = model(data)
+        # Init
+        optimizer.zero_grad()
+        # Predict
+        y_pred = model(data)
 
-    # Calculate loss
-    loss = criterion(y_pred, target)
-    train_losses.append(loss)
-    lrs.append(get_lr(optimizer))                           #adding extra line
+        # Calculate loss
+        loss = criterion(y_pred, target)
+        train_losses.append(loss)
+        lrs.append(get_lr(optimizer))                           #adding extra line
 
-    # Backpropagation
-    loss.backward()
-    optimizer.step()
-    scheduler.step()                                        #adding extra line
+        # Backpropagation
+        loss.backward()
+        optimizer.step()
+        scheduler.step()                                        #adding extra line
 
-    # Update pbar-tqdm
+        # Update pbar-tqdm
 
-    pred = y_pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-    correct += pred.eq(target.view_as(pred)).sum().item()
-    processed += len(data)
+        pred = y_pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+        correct += pred.eq(target.view_as(pred)).sum().item()
+        processed += len(data)
 
-                                                            #adding get_lr function below
-    pbar.set_description(desc= f'Loss={loss.item()} LR={get_lr(optimizer)} Batch_id={batch_idx} Accuracy={100*correct/processed:0.2f}')
-    train_acc.append(100*correct/processed)
+                                                        #adding get_lr function below
+        pbar.set_description(desc= f'Loss={loss.item()} LR={get_lr(optimizer)} Batch_id={batch_idx} Accuracy={100*correct/processed:0.2f}')
+        train_acc.append(100*correct/processed)
     return train_acc, train_losses
 
 def test(model= net, device= device, test_loader= test_loader, criterion= criterion):            #added criterion here
