@@ -74,91 +74,56 @@ lrs = []
 
 def train(model, device= device, train_loader= train_loader, optimizer= optimizer, scheduler= scheduler, criterion= criterion): #adding scheduler and criterion
     model.train()
-    pbar = tqdm(train_loader)
+    pbar = tqdm(train_loader)  #adding
+    train_loss = 0
     correct = 0
-    processed = 0
-    for batch_idx, (data, target) in enumerate(pbar):
-        # get samples
-        data, target = data.to(device), target.to(device)
-
-        # Init
+    total = 0
+    train_acc = []     #adding 
+    train_losses = [] #adding
+    processed = 0     #adding
+    for batch_idx, (data, targets) in enumerate(pbar):
+        data, targets = data.to(device), targets.to(device)
         optimizer.zero_grad()
-        # Predict
-        y_pred = model(data)
-
-        # Calculate loss
-        loss = criterion(y_pred, target)
-        train_losses.append(loss)
-        lrs.append(get_lr(optimizer))                           #adding extra line
-
-        # Backpropagation
+        outputs = model(data)
+        loss = criterion(outputs, targets)
+        train_losses.append(loss)  #adding
         loss.backward()
         optimizer.step()
-        scheduler.step()                                        #adding extra line
 
-        # Update pbar-tqdm
-
-        pred = y_pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-        correct += pred.eq(target.view_as(pred)).sum().item()
+        train_loss += loss.item()
+        _, predicted = outputs.max(1)
+        total += targets.size(0)
+        correct += predicted.eq(targets).sum().item()
         processed += len(data)
-
-                                                        #adding get_lr function below
         pbar.set_description(desc= f'Loss={loss.item()} LR={get_lr(optimizer)} Batch_id={batch_idx} Accuracy={100*correct/processed:0.2f}')
         train_acc.append(100*correct/processed)
     return train_acc, train_losses
 
-def test(model= net, device= device, test_loader= test_loader, criterion= criterion):            #added criterion here
+def test(model, device, test_loader, criterion): 
     model = model.to(device) 
-    model.eval()
-    test_loss = 0
-    correct = 0
-    misclassified_images = []  # List to store misclassified images and labels
-    with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += criterion(output, target).item()
-            # pred = output.argmax(dim=1, keepdim = True)  # Remove keepdim=True; now shape: [batch_size]
-            pred = output.argmax(dim=1)
-            correct += pred.eq(target.view_as(pred)).sum().item()        #modified this line
-            # Find misclassified indices
-            # Identify misclassified indices
-            misclassified_idxs = (pred != target).nonzero(as_tuple=False).squeeze()
-
-            # Handle the case of single/multiple misclassifications
-            if misclassified_idxs.ndim == 0:
-                misclassified_idxs = [misclassified_idxs.item()]
-            else:
-                misclassified_idxs = misclassified_idxs.tolist()
-            
-            #<------------------------------->
-            # for idx_pair in misclassified_idxs:
-            #     if len(misclassified_images) < 20:  # Limit the number of images
-            #         idx = idx_pair[0] if isinstance(idx_pair, list) else idx_pair
-            #<----------------use the above for loop if u get error---------->
-            
-            # Collect misclassified images
-            for idx in misclassified_idxs:
-                if len(misclassified_images) < 20:  # Limit the number of images
-                    img = data[idx].cpu()
-                    actual_label = target[idx].item()
-                    predicted_label = pred[idx].item()
-                    misclassified_images.append((img, actual_label, predicted_label))
-                      
+    model.eval() 
+    test_loss = 0 
+    correct = 0 
+    total = 0 
+    test_losses = [] 
+    test_acc = [] 
+    with torch.no_grad(): 
+        for batch_idx, (data, targets) in enumerate(test_loader):
+            data, targets = data.to(device), targets.to(device)
+            outputs = model(data) 
+            loss = criterion(outputs, targets)
+            test_loss += loss.item() 
+            _, predicted = outputs.max(1) 
+            total += targets.size(0) 
+            correct += predicted.eq(targets).sum().item()
     test_loss /= len(test_loader.dataset)
     test_losses.append(test_loss)
     Accuracy = 100. * correct / len(test_loader.dataset)
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    return test_acc, test_losses
 
-    test_acc.append(100. * correct / len(test_loader.dataset))
-    return test_acc, test_losses, misclassified_images
-
-
-# print('printing loss curve and accuracy')
-# visualize_loss_accuracy(train_loss=train_losses, train_acc = train_acc, test_loss= test_losses, test_acc = test_acc)
-#providing default values
 def visualize_train_data(): 
     def imshow(img):
         img = img / 2 + 0.5     # unnormalize
