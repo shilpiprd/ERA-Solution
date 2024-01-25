@@ -164,7 +164,8 @@ def gradcam_misclassified(model, device):
 
         visualization = show_cam_on_image(img, grayscale_cam, use_rgb=True, image_weight=0.7)
         plt.imshow(visualization) 
-    plt.tight_layout(visualization)
+        sub.set_title("Actual: {}, Pred: {}".format(actual_labels[i], predicted_labels[i]),color='red')
+    plt.tight_layout()
     plt.show() 
 
 
