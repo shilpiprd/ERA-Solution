@@ -16,6 +16,13 @@ import cv2
 from my_utils import get_lr, visualize_misclassified_images, visualize_loss_accuracy
 import torchvision
 import matplotlib.pyplot as plt
+#for gradcam 
+import matplotlib.pyplot as plt
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+from torchvision.models import resnet50
+
 
 cuda = torch.cuda.is_available()
 dataloader_args = dict(shuffle=True, batch_size=512, num_workers=4, pin_memory=True) if cuda else dict(shuffle=True, batch_size=64)
@@ -139,3 +146,67 @@ def visualize_train_data():
     imshow(torchvision.utils.make_grid(images[:4]))
     # print labels
     print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+
+def visualize_gradcam_single(model, idx = 4): #pass index of image u wanna perform gradcam on and model.
+    dataiter = iter(test_loader)
+    images, labels = next(dataiter)
+    target_layers = [model.layer4[-1]]
+    input_tensor = images[idx].unsqueeze(dim=0)# Create an input tensor image for your model..
+    cam = GradCAM(model=model, target_layers=target_layers)
+    targets = None
+    grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
+    grayscale_cam = grayscale_cam[0, :]
+    mean = [0.4914, 0.4822, 0.4465]
+    std = [0.2023, 0.1994, 0.2010]
+
+    img = input_tensor.squeeze(0).to('cpu').numpy()
+    img = np.transpose(img, (1, 2, 0))  # Convert to numpy and reshape to HxWxC
+    img = std * img + mean
+    img = np.clip(img, 0, 1)
+    visualization = show_cam_on_image(img, grayscale_cam, use_rgb=True, image_weight=0.7)
+
+    fig, ax = plt.subplots(figsize=(2, 2))
+    ax.imshow(visualization)
+
+def gradcam_misclassified(model, device): 
+   #first get misclassified images
+    model.eval()
+    misclassified_images = [] 
+    actual_labels = [] 
+    actual_targets = [] 
+    predicted_labels = [] 
+
+    with torch.no_grad(): 
+        for data, target in test_loader: #target is the true label
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            _, pred = torch.max(output, 1) 
+            for i in range(len(pred)): 
+                if pred[1] != target[i]: 
+                        actual_targets.append(target[i]) 
+                        misclassified_images.append(data[i])
+                        actual_labels.append(classes[target[i]])
+                        predicted_labels.append(classes[pred[i]])
+    #GRADCAM 
+    target_layers = [model.layer4[-1]]
+    cam = GradCAM(model= model, target_layers = target_layers)
+    #plot the images 
+    fig = plt.figure(figsize=(12,5)) #talking about size of each image
+    for i in range(10): #we wana plot 10 images
+        sub = fig.add_subplot(2, 5, i+1)
+        input_tensor = misclassified_images[i].unsqueez(dim = 0)
+        targets = [ClassifierOutputTarget(actual_targets[i])] 
+        grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
+        grayscale_cam = grayscale_cam[0, :]
+        mean = [0.4914, 0.4822, 0.4465]
+        std = [0.2023, 0.1994, 0.2010]
+
+        img = input_tensor.squeeze(0).to('cpu').numpy() 
+        img = np.transpose(img, (1,2,0)) 
+        img = std* img + mean 
+        img = np.clip(img, 0, 1) 
+
+        visualization = show_cam_on_image(img, grayscale_cam, use_rgb=True, image_weight=0.7)
+        plt.imshow(visualization) 
+    plt.tight_layout(visualization)
+    plt.show() 
