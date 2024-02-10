@@ -56,7 +56,9 @@ class MyLitYOLOv3(LightningModule):
         loss = self.criterion(out, y) 
 
         self.log("training loss", loss, prog_bar = True)
-        self.log("lr", self.trainer.optimizers[0].param_groups[0])
+        current_lr = self.trainer.optimizers[0].param_groups[0]['lr']
+        self.log("lr", current_lr, prog_bar=True)
+        # self.log("lr", self.trainer.optimizers[0].param_groups[0])
 
         return loss 
     
