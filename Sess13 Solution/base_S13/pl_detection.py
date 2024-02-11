@@ -2,7 +2,7 @@ import torch
 import config
 from model import YOLOv3
 from loss import YoloLoss
-from lightning import LightningModule
+from pytorch_lightning import LightningModule
 from utils import (
     mean_average_precision,
     cells_to_bboxes,
