@@ -8,8 +8,8 @@ from utils import seed_everything
 DATASET = 'PASCAL_VOC'
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # seed_everything()  # If you want deterministic behavior
-NUM_WORKERS = 0
-BATCH_SIZE = 32
+NUM_WORKERS = 2 #for t4 gpu
+BATCH_SIZE = 5 #since we've total 25 images
 IMAGE_SIZE = 416
 NUM_CLASSES = 20
 LEARNING_RATE = 1e-5
